@@ -1,7 +1,7 @@
 const app = require('express')()
 const cors = require('cors')
 
-const port = 3500
+const port = 5000
 const options = {
     cors: {
       origin: "*",
@@ -11,7 +11,7 @@ const options = {
 app.use(cors());
 
 app.get("/", (req, res) => {
-    res.send(`<h1>Hello!</h1> <button onClick="alert('Why do we exist')">Does not do anything</button>`)
+    res.send(`Hello World!`)
 })
 
 app.listen(port, () => {
