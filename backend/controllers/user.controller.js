@@ -73,7 +73,7 @@ async function createUser(req, res, next) {
             return;
         }
 
-        // INSERT INTO User (FirstName, LastName, Username, Password, Role, DeptId) 
+        // INSERT INTO User (FirstName, LastName, Username, Password, Role, DeptId) VALUES (?, ?, ?, ?, ?, ?) [FirstName, LastName, Username, hash, Role, DeptId] 
         db('User').insert({FirstName: FirstName, LastName: LastName, Username:Username, Password:hash, Role:Role, DeptId:DeptId})
             .then(() => {
                 res.json({message: "User created successfully"});
