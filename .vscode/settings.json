@@ -1,0 +1,16 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 1024,
+            "driver": "SQLite",
+            "name": "Chinook",
+            "database": "C:\\Users\\cmzgt\\Documents\\CS364\\chinook.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Taskify",
+            "database": "\\\\wsl.localhost\\Ubuntu\\home\\czagrzebski\\Projects\\CS364-Final\\backend\\db\\taskify.db"
+        }
+    ]
+}
