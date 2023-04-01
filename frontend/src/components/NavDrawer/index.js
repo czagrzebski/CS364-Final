@@ -18,6 +18,11 @@ import TaskAltIcon from '@mui/icons-material/TaskAlt';
 
 const drawerWidth = 240;
 
+const linkStyles = {
+    textDecoration: 'none',
+    color: 'white'
+}
+
 export default function NavDrawer() {
   return (
     <Box sx={{ display: 'flex' }}>
@@ -54,7 +59,7 @@ export default function NavDrawer() {
         </Toolbar>
         <Divider />
         <List>
-            <Link to="/tasks">
+            <Link to="/tasks" style={linkStyles}>
                 <ListItem disablePadding>
                     <ListItemButton>
                         <ListItemIcon>
@@ -65,7 +70,7 @@ export default function NavDrawer() {
                 </ListItem>
             </Link>
 
-            <Link to="/projects">
+            <Link to="/projects" style={linkStyles}>
                 <ListItem disablePadding>
                     <ListItemButton>
                         <ListItemIcon>
