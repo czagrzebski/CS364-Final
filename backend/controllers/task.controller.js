@@ -36,6 +36,37 @@ const getTaskById = async (req, res, next) => {
     res.json(task);
 }
 
+const getTaskAssignedToUser = async (req, res, next) => {
+    const {userId} = req.body;
+
+    if (!userId) {
+        next(new Error("User ID is required"));
+        return;
+    }
+
+    const tasks = await db.raw('SELECT * FROM Task JOIN Project JOIN User ON Task.ProjectId = Project.ProjectId AND Task.UserId = User.UserId WHERE User.UserId = ?', [userId])
+        .catch((err) => {
+            err.status = 400;
+            error.message = "Failed to fetch tasks";
+            next(err);
+        });
+
+    res.json(tasks);
+}
+
+const updateTaskById = async (req, res, next) => {
+    const {taskId, ProjectId, UserId, TaskTitle, TaskDescription, TaskDueDate} = req.body;
+    
+    if(!taskId || !ProjectId || !UserId || !TaskTitle || !TaskDescription || !TaskDueDate) {
+        next(new Error("All fields are required"));
+        return;
+    }
+
+
+    // TODO: Update the task
+}
+
+
 const insertTask = async (req, res, next) => {
     const {ProjectId, UserId, TaskTitle, TaskDescription, TaskDueDate} = req.body;
 

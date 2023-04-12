@@ -77,3 +77,13 @@ INSERT INTO [User] ([FirstName], [LastName], [Username], [Password], [Role], [De
 
 /* INSERT A FEW PROJECTS */
 INSERT INTO [Project] ([ProjectTitle], [ProjectActive], [DeptId]) VALUES ('Robot Inventory System Integration', 1, 1);
+
+/* INSERT A FEW TASKS */
+INSERT INTO [Task] ([TaskTitle], [TaskDescription], [TaskCompleted], [TaskDateCreated], [TaskDueDate], [ProjectId]) VALUES ('Create Database', 'Create the database schema for the Robot Inventory System', 0, '2021-03-29', '2021-04-01', 1);
+INSERT INTO [Task] ([TaskTitle], [TaskDescription], [TaskCompleted], [TaskDateCreated], [TaskDueDate], [ProjectId]) VALUES ('Create Database Script', 'Create the database script for the Robot Inventory System', 0, '2021-03-29', '2021-04-01', 1);
+INSERT INTO [Task] )[TaskTitle], [TaskDescription], [TaskCompleted], [TaskDateCreated], [TaskDueDate], [ProjectId]) VALUES ('Meet with Manufacturing Department', 'Hold design meeting with manufacturing team', 0, '2021-03-29', '2021-04-01', 1);
+
+/* Assign Tasks to Users */
+INSERT INTO [AssignedTo] ([DateAssigned], [UserId], [TaskId]) VALUES ('2021-03-29', 2, 1);
+INSERT INTO [AssignedTo] ([DateAssigned], [UserId], [TaskId]) VALUES ('2021-03-29', 2, 2);
+INSERT INTO [AssignedTo] ([DateAssigned], [UserId], [TaskId]) VALUES ('2021-03-29', 3, 3);
