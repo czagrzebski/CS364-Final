@@ -22,8 +22,8 @@ const router = createBrowserRouter([
     errorElement: <h1>404 Not Found</h1>,
     children: [
       {index: true, element: <Navigate to="/tasks" replace />},
-      { path: 'tasks', element: <Tasks />},
-      { path: 'projects', element: <Projects />}
+      { path: 'tasks', element: <Tasks />, name: 'Tasks'},
+      { path: 'projects', element: <Projects />, name: 'Projects'}
     ],
   },
   {

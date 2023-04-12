@@ -2,6 +2,7 @@ const app = require('express')()
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const userRoutes = require('./routes/user.routes')
+const taskRoutes = require('./routes/task.routes')
 
 app.use(bodyParser.json());
 
@@ -15,6 +16,7 @@ const options = {
 app.use(cors());
 
 app.use('/user', userRoutes);
+app.use('/task', taskRoutes);
 
 //--Error Handlers--//
 app.use((req, res) => res.status(404).send("404 NOT FOUND"));
@@ -25,7 +27,7 @@ app.use(function (err, req, res, next) {
 });
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
+    console.log(`Taskify backend server listening on port ${port}`);
 })
 
 

@@ -24,22 +24,10 @@ const linkStyles = {
 }
 
 export default function NavDrawer() {
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px`, bgcolor: 'primary.main' }}
-        elevation={0}
-
-      >
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div">
-            Title
-          </Typography>
-        </Toolbar>
-        <Divider />
-      </AppBar>
       <Drawer
         sx={{
           width: drawerWidth,

@@ -1,9 +1,10 @@
 import React from "react";
+import CustomAppBar from "../../components/CustomAppBar";
 
 export function Projects() {
   return (
     <div>
-      <h3 sx={{margin: 0}}>Projects</h3>
+      <CustomAppBar pageTitle="Projects"/>
     </div>
   );
 }

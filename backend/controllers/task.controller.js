@@ -1,12 +1,13 @@
-const db = require("../db")
+const db = require("../db/db")
 
 const getAllTasks = async (req, res, next) => {
-    const allTasks = db.raw('SELECT * FROM Task JOIN Project JOIN User ON Task.ProjectId = Project.ProjectId AND Task.UserId = User.UserId')
+    db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, User.FirstName, User.LastName FROM Task JOIN AssignedTo JOIN Project JOIN User ON Task.ProjectId = Project.ProjectId AND Task.TaskId = AssignedTo.TaskId AND AssignedTo.UserId = User.UserId ORDER BY Task.TaskDueDate ASC')
         .then((tasks) => {
             res.json(tasks);
         }).catch((err) => {
+            console.log(err)
             err.status = 400;
-            error.message = "Failed to fetch tasks";
+            err.message = "Failed to fetch tasks";
             next(err);
         });
     }
@@ -55,15 +56,29 @@ const getTaskAssignedToUser = async (req, res, next) => {
 }
 
 const updateTaskById = async (req, res, next) => {
-    const {taskId, ProjectId, UserId, TaskTitle, TaskDescription, TaskDueDate} = req.body;
-    
-    if(!taskId || !ProjectId || !UserId || !TaskTitle || !TaskDescription || !TaskDueDate) {
+    const {TaskId, TaskTitle, TaskDescription, TaskCompleted, TaskDueDate} = req.body;
+
+    if(typeof TaskCompleted != 'boolean') {
+        next(new Error("ALl fields are required"));
+        return;
+    }
+
+    if(!TaskId || !TaskTitle || !TaskDescription || !TaskDueDate) {
         next(new Error("All fields are required"));
         return;
     }
 
-
     // TODO: Update the task
+    const update = await db.raw('UPDATE Task SET TaskTitle = ?, TaskDescription = ?, TaskCompleted = ?, TaskDueDate = ? WHERE TaskId = ?', [TaskTitle, TaskDescription, TaskCompleted, TaskDueDate, TaskId])
+        .then((task => {
+            res.json('Task updated successfully');
+        }))
+        .catch((err) => {
+            err.status = 400;
+            console.log(err)
+            err.message = "Invalid Task ID";
+            next(err);
+        })
 }
 
 
@@ -108,4 +123,8 @@ const deleteTaskById = async (req, res, next) => {
             error.message = "Failed to delete task";
             next(err);
         });
+}
+
+module.exports = {
+    getAllTasks, updateTaskById
 }
