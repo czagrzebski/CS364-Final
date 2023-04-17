@@ -1,7 +1,7 @@
 const db = require("../db/db")
 
 const getAllTasks = async (req, res, next) => {
-    db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, User.FirstName, User.LastName FROM Task JOIN AssignedTo JOIN Project JOIN User ON Task.ProjectId = Project.ProjectId AND Task.TaskId = AssignedTo.TaskId AND AssignedTo.UserId = User.UserId ORDER BY Task.TaskDueDate ASC')
+    db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, User.FirstName, User.LastName FROM Task LEFT JOIN AssignedTo ON Task.TaskId = AssignedTo.TaskId JOIN Project ON  Task.ProjectId = Project.ProjectId LEFT JOIN User ON AssignedTo.UserId = User.UserId ORDER BY Task.TaskDueDate ASC')
         .then((tasks) => {
             res.json(tasks);
         }).catch((err) => {
@@ -90,7 +90,35 @@ const insertTask = async (req, res, next) => {
         return;
     }
 
-    // TODO: Get the current time and time 
+    const currentTime = new Date().toISOString().slice(0, 10).replace('T', ' ');
+
+    const taskId = await db.raw('INSERT INTO Task (TaskTitle, TaskDescription, TaskCompleted, TaskDateCreated, TaskDueDate, ProjectId) VALUES (?, ?, ?, ?, ?, ?) RETURNING TaskId', [TaskTitle, TaskDescription, 0, currentTime, TaskDueDate, ProjectId])
+        .then((task => {
+            return task[0].TaskId;
+        }
+        ))
+        .catch((err) => {
+            err.status = 400;
+            console.log(err)
+            err.message = "Failed to create task";
+            next(err);
+        })
+
+    if (!taskId) {
+        next(new Error("Failed to create task"));
+        return;
+    }
+    
+    if(UserId != -1) {
+        await db.raw('INSERT INTO AssignedTo (TaskId, UserId, DateAssigned) VALUES (?, ?, ?)', [taskId, UserId, currentTime])
+        .catch((err) => {
+            err.status = 400;
+            err.message = "Failed to assign task to user";
+            next(err);
+        })
+    }
+
+    res.json("Task Created Successfully");
 }
 
 const deleteTaskById = async (req, res, next) => {
@@ -126,5 +154,5 @@ const deleteTaskById = async (req, res, next) => {
 }
 
 module.exports = {
-    getAllTasks, updateTaskById
+    getAllTasks, updateTaskById, insertTask
 }
