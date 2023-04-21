@@ -56,7 +56,7 @@ const getTaskAssignedToUser = async (req, res, next) => {
 }
 
 const updateTaskById = async (req, res, next) => {
-    const {TaskId, TaskTitle, TaskDescription, TaskCompleted, TaskDueDate} = req.body;
+    const {TaskId, TaskTitle, TaskDescription, TaskCompleted, TaskDueDate, ProjectId, UserId} = req.body;
 
     if(typeof TaskCompleted != 'boolean') {
         next(new Error("ALl fields are required"));
@@ -68,7 +68,6 @@ const updateTaskById = async (req, res, next) => {
         return;
     }
 
-    // TODO: Update the task
     const update = await db.raw('UPDATE Task SET TaskTitle = ?, TaskDescription = ?, TaskCompleted = ?, TaskDueDate = ? WHERE TaskId = ?', [TaskTitle, TaskDescription, TaskCompleted, TaskDueDate, TaskId])
         .then((task => {
             res.json('Task updated successfully');
@@ -79,6 +78,15 @@ const updateTaskById = async (req, res, next) => {
             err.message = "Invalid Task ID";
             next(err);
         })
+
+    if(UserId != -1) {
+        await db.raw('INSERT INTO AssignedTo (TaskId, UserId, DateAssigned) VALUES (?, ?, ?)', [taskId, UserId, currentTime])
+        .catch((err) => {
+            err.status = 400;
+            err.message = "Failed to assign task to user";
+            next(err);
+        })
+    }
 }
 
 
@@ -95,8 +103,7 @@ const insertTask = async (req, res, next) => {
     const taskId = await db.raw('INSERT INTO Task (TaskTitle, TaskDescription, TaskCompleted, TaskDateCreated, TaskDueDate, ProjectId) VALUES (?, ?, ?, ?, ?, ?) RETURNING TaskId', [TaskTitle, TaskDescription, 0, currentTime, TaskDueDate, ProjectId])
         .then((task => {
             return task[0].TaskId;
-        }
-        ))
+        }))
         .catch((err) => {
             err.status = 400;
             console.log(err)
@@ -109,15 +116,13 @@ const insertTask = async (req, res, next) => {
         return;
     }
     
-    if(UserId != -1) {
-        await db.raw('INSERT INTO AssignedTo (TaskId, UserId, DateAssigned) VALUES (?, ?, ?)', [taskId, UserId, currentTime])
-        .catch((err) => {
-            err.status = 400;
-            err.message = "Failed to assign task to user";
-            next(err);
-        })
-    }
-
+    await db.raw('INSERT INTO AssignedTo (TaskId, UserId, DateAssigned) VALUES (?, ?, ?)', [taskId, UserId, currentTime])
+    .catch((err) => {
+        err.status = 400;
+        err.message = "Failed to assign task to user";
+        next(err);
+    })
+    
     res.json("Task Created Successfully");
 }
 
