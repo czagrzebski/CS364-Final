@@ -1,7 +1,7 @@
 const db = require("../db/db")
 
 const getAllTasks = async (req, res, next) => {
-    db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, User.FirstName, User.LastName FROM Task LEFT JOIN AssignedTo ON Task.TaskId = AssignedTo.TaskId JOIN Project ON  Task.ProjectId = Project.ProjectId LEFT JOIN User ON AssignedTo.UserId = User.UserId ORDER BY Task.TaskDueDate ASC')
+    db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, Project.ProjectId, User.UserId, User.FirstName, User.LastName, AssignedTo.DateAssigned FROM Task LEFT JOIN AssignedTo ON Task.TaskId = AssignedTo.TaskId JOIN Project ON  Task.ProjectId = Project.ProjectId LEFT JOIN User ON AssignedTo.UserId = User.UserId ORDER BY Task.TaskDueDate ASC')
         .then((tasks) => {
             res.json(tasks);
         }).catch((err) => {
@@ -13,19 +13,23 @@ const getAllTasks = async (req, res, next) => {
     }
 
 const getTaskById = async (req, res, next) => {
-    const {taskId} = req.body;
+    const {TaskId} = req.body;
 
-    if (!taskId) {
+    console.log('Processing request for task with ID: ' + TaskId + '...')
+
+    if (!TaskId || TaskId == -1) {
         next(new Error("Task ID is required"));
+        return;
     }
 
-    const task = await db.raw('SELECT * FROM Task JOIN Project JOIN User ON Task.ProjectId = Project.ProjectId AND Task.UserId = User.UserId WHERE TaskId = ?', [taskId])
+    const task = db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, User.FirstName, User.LastName FROM Task LEFT JOIN AssignedTo ON Task.TaskId = AssignedTo.TaskId JOIN Project ON  Task.ProjectId = Project.ProjectId LEFT JOIN User ON AssignedTo.UserId = User.UserId WHERE Task.TaskId = ?', [TaskId])
         .then((task => {
             return task[0];
         }))
         .catch((err) => {
             err.status = 400;
-            error.message = "Invalid Task ID";
+            err.message = "Invalid Task ID";
+            console.log(err)
             next(err);
         });
 
@@ -37,58 +41,42 @@ const getTaskById = async (req, res, next) => {
     res.json(task);
 }
 
-const getTaskAssignedToUser = async (req, res, next) => {
-    const {userId} = req.body;
-
-    if (!userId) {
-        next(new Error("User ID is required"));
-        return;
-    }
-
-    const tasks = await db.raw('SELECT * FROM Task JOIN Project JOIN User ON Task.ProjectId = Project.ProjectId AND Task.UserId = User.UserId WHERE User.UserId = ?', [userId])
-        .catch((err) => {
-            err.status = 400;
-            error.message = "Failed to fetch tasks";
-            next(err);
-        });
-
-    res.json(tasks);
-}
-
 const updateTaskById = async (req, res, next) => {
     const {TaskId, TaskTitle, TaskDescription, TaskCompleted, TaskDueDate, ProjectId, UserId} = req.body;
-
-    if(typeof TaskCompleted != 'boolean') {
-        next(new Error("ALl fields are required"));
-        return;
-    }
 
     if(!TaskId || !TaskTitle || !TaskDescription || !TaskDueDate) {
         next(new Error("All fields are required"));
         return;
     }
 
-    const update = await db.raw('UPDATE Task SET TaskTitle = ?, TaskDescription = ?, TaskCompleted = ?, TaskDueDate = ? WHERE TaskId = ?', [TaskTitle, TaskDescription, TaskCompleted, TaskDueDate, TaskId])
-        .then((task => {
-            res.json('Task updated successfully');
-        }))
+    await db.raw('UPDATE Task SET TaskTitle = ?, TaskDescription = ?, TaskCompleted = ?, TaskDueDate = ?, ProjectId = ? WHERE TaskId = ?', [TaskTitle, TaskDescription, TaskCompleted, TaskDueDate, ProjectId, TaskId])
         .catch((err) => {
             err.status = 400;
-            console.log(err)
             err.message = "Invalid Task ID";
             next(err);
         })
 
-    if(UserId != -1) {
-        await db.raw('INSERT INTO AssignedTo (TaskId, UserId, DateAssigned) VALUES (?, ?, ?)', [taskId, UserId, currentTime])
-        .catch((err) => {
-            err.status = 400;
-            err.message = "Failed to assign task to user";
-            next(err);
-        })
-    }
-}
+    /* Update AssignedTo Table. Check if assigned user is different than last assigned user */
+    const lastAssignedUser = await db.raw('SELECT UserId FROM AssignedTo WHERE TaskId = ?', [TaskId])
+        .then((user => {
+            return user[0].UserId;
+        }))
 
+    if(lastAssignedUser != UserId) {
+        const currentTime = new Date().toISOString().slice(0, 10).replace('T', ' ');
+        await db.raw('UPDATE AssignedTo SET UserId = ?, DateAssigned = ? WHERE TaskId = ?', [UserId, currentTime, TaskId])
+            .then((task => {
+                res.json("Task Updated Successfully");
+            }))
+            .catch((err) => {
+                err.status = 400;
+                err.message = "Failed to update task";
+                next(err);
+            })
+    } else {
+        res.json("Task Updated Successfully");
+    } 
+}
 
 const insertTask = async (req, res, next) => {
     const {ProjectId, UserId, TaskTitle, TaskDescription, TaskDueDate} = req.body;
@@ -99,7 +87,6 @@ const insertTask = async (req, res, next) => {
     }
 
     const currentTime = new Date().toISOString().slice(0, 10).replace('T', ' ');
-
     const taskId = await db.raw('INSERT INTO Task (TaskTitle, TaskDescription, TaskCompleted, TaskDateCreated, TaskDueDate, ProjectId) VALUES (?, ?, ?, ?, ?, ?) RETURNING TaskId', [TaskTitle, TaskDescription, 0, currentTime, TaskDueDate, ProjectId])
         .then((task => {
             return task[0].TaskId;
@@ -116,30 +103,45 @@ const insertTask = async (req, res, next) => {
         return;
     }
     
-    await db.raw('INSERT INTO AssignedTo (TaskId, UserId, DateAssigned) VALUES (?, ?, ?)', [taskId, UserId, currentTime])
-    .catch((err) => {
-        err.status = 400;
-        err.message = "Failed to assign task to user";
-        next(err);
-    })
-    
-    res.json("Task Created Successfully");
+    if(UserId == -1) {
+        await db.raw('INSERT INTO AssignedTo (TaskId, UserId, DateAssigned) VALUES (?, ?, ?)', [taskId, null, currentTime])
+            .then((task => {
+                res.json("Task Created Successfully");
+            }))
+            .catch((err) => {
+                err.status = 400;
+                err.message = "Failed to assign task to user";
+                next(err);
+            })
+    } else {
+        await db.raw('INSERT INTO AssignedTo (TaskId, UserId, DateAssigned) VALUES (?, ?, ?)', [taskId, UserId, currentTime])
+            .then((task => {
+                res.json("Task Created Successfully");
+            }))
+            .catch((err) => {
+                err.status = 400;
+                err.message = "Failed to assign task to user";
+                next(err);
+            })
+    } 
 }
 
 const deleteTaskById = async (req, res, next) => {
-    const {taskId} = req.body;
+    const {TaskId} = req.body;
 
-    if (!taskId) {
+    console.log(req.body)
+
+    if (!TaskId) {
         next(new Error("Task ID is required"));
     }
 
-    const task = await db.raw('SELECT * FROM Task WHERE TaskId = ?', [taskId])
+    const task = await db.raw('SELECT * FROM Task WHERE TaskId = ?', [TaskId])
         .then((task => {
             return task[0];
         }))
         .catch((err) => {
             err.status = 400;
-            error.message = "Invalid Task ID";
+            err.message = "Invalid Task ID";
             next(err);
         });
 
@@ -148,16 +150,25 @@ const deleteTaskById = async (req, res, next) => {
         return;
     }
 
-    await db.raw('DELETE FROM Task WHERE TaskId = ?', [taskId])
-        .then(() => {
-            res.json("Task Deleted Successfully");
-        }).catch((err) => {
+    await db.raw('DELETE FROM Task WHERE TaskId = ?', [TaskId])
+         .catch((err) => {
             err.status = 400;
-            error.message = "Failed to delete task";
+            err.message = "Failed to delete task";
             next(err);
         });
+
+    await db.raw('DELETE FROM AssignedTo WHERE TaskId = ?', [TaskId])
+        .then(() => {
+            res.json("Task Deleted Successfully");
+        }
+        ).catch((err) => {
+            err.status = 400;
+            err.message = "Failed to delete task";
+            next(err);
+        });
+
 }
 
 module.exports = {
-    getAllTasks, updateTaskById, insertTask
+    getAllTasks, updateTaskById, insertTask, getTaskById, deleteTaskById
 }

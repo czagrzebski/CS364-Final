@@ -33,7 +33,7 @@ export function Tasks() {
     <div>
       <CustomAppBar pageTitle="Tasks"/>
       <CreateTaskDialog isCreateDialogOpen={isCreateDialogOpen} setIsCreateDialogOpen={setIsCreateDialogOpen} onTaskUpdate={getAllTasks} />
-      <TaskTable taskList={taskList} addTask={() => setIsCreateDialogOpen(true)} updateTask={updateTask}/>
+      <TaskTable taskList={taskList} addTask={() => setIsCreateDialogOpen(true)} updateTask={updateTask} onTaskUpdate={getAllTasks}/>
     </div>
   );
 }

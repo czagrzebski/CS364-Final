@@ -51,7 +51,7 @@ CREATE TABLE Task (
 
 CREATE TABLE AssignedTo (
     DateAssigned DATE NOT NULL,
-    UserId INTEGER NOT NULL,
+    UserId INTEGER,
     TaskId INTEGER NOT NULL,
     CONSTRAINT fk_user FOREIGN KEY (UserId) REFERENCES User(UserId),
     CONSTRAINT fk_task FOREIGN KEY (TaskId) REFERENCES Task(TaskId)

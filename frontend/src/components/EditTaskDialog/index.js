@@ -8,16 +8,15 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import api from '../../services/api';
 import { useNotification } from '../NotificationProvider';
+import dayjs from 'dayjs';
 
-
-
-export default function EditTaskDialog({isEditDialogOpen, setIsEditDialogOpen, onTaskUpdate}) {
-  const [taskTitle, setTaskTitle] = useState('');
-  const [taskDescription, setTaskDescription] = useState('');
-  const [taskDueDate, setTaskDueDate] = useState(null);
-  const [taskDueDateString, setTaskDueDateString] = useState('');
-  const [taskProject, setTaskProject] = useState('');
-  const [taskAssignee, setTaskAssignee] = useState(-1);
+export default function EditTaskDialog({isOpen, setIsOpen, onTaskUpdate, task}) {
+  const [taskTitle, setTaskTitle] = useState(task.TaskTitle);
+  const [taskDescription, setTaskDescription] = useState(task.TaskDescription);
+  const [taskDueDate, setTaskDueDate] = useState(new dayjs(task.TaskDueDate));
+  const [taskDueDateString, setTaskDueDateString] = useState(task.TaskDueDate);
+  const [taskProject, setTaskProject] = useState(task.ProjectId);
+  const [taskAssignee, setTaskAssignee] = useState(task.UserId);
   const [taskProjectList, setTaskProjectList] = useState([]);
   const [userList, setUserList] = useState([]);
 
@@ -26,13 +25,11 @@ export default function EditTaskDialog({isEditDialogOpen, setIsEditDialogOpen, o
   useEffect(() => {
     // Get project list for select
     getProjectList();
-
-    // Get user list for select
     getUserList();
-  }, [])
+  }, [task])
 
   const handleClose = () => {
-    setIsCreateDialogOpen(false);
+    setIsOpen(false);
     setTaskTitle('');
     setTaskDescription('');
     setTaskDueDate('');
@@ -59,32 +56,48 @@ export default function EditTaskDialog({isEditDialogOpen, setIsEditDialogOpen, o
       });
   };
 
-  const createTask = () => {
-    api.post('task/update', {
+  const deleteTask = () => {
+    api.put('task/delete', {
+      TaskId: task.TaskId
+    }).then((response) => {
+      createNotification('Task deleted successfully', 'success');
+      onTaskUpdate();
+      handleClose();
+    }).catch((error) => {
+      createNotification('Error deleting task', 'error');
+      console.log(error);
+    });
+  };
+
+  const updateTask = () => {
+    api.put('task/update', {
+      TaskId: task.TaskId,
       TaskTitle: taskTitle,
       TaskDescription: taskDescription,
       TaskDueDate: taskDueDateString,
+      TaskCompleted: task.TaskCompleted,
       ProjectId: taskProject,
       UserId: taskAssignee
     }).then((response) => {
-      createNotification("Task Successfully Created", "success");
+      createNotification('Task updated successfully', 'success');
       onTaskUpdate();
-      handleClose(); 
+      handleClose();
     }).catch((error) => {
-      createNotification("Error Creating Task", "error");
+      createNotification('Error updating task', 'error');
+      console.log(error);
     });
   };
 
   return (
-      <Dialog open={isCreateDialogOpen} onClose={handleClose}>
-        <DialogTitle>Create Task</DialogTitle>
+      <Dialog open={isOpen} onClose={handleClose}>
+        <DialogTitle>Edit Task</DialogTitle>
         <DialogContent>
           <FormControl sx={{ m: 1, minWidth: 475 }}>
               <TextField
                 required
                 id="outlined-required"
                 label="Title"
-                defaultValue=""
+                value={taskTitle}
                 color="info"
                 onChange={(event) => setTaskTitle(event.target.value)}
               />
@@ -95,6 +108,7 @@ export default function EditTaskDialog({isEditDialogOpen, setIsEditDialogOpen, o
               label="Description"
               multiline
               rows={4}
+              value={taskDescription}
               color="info"
               onChange={(event) => setTaskDescription(event.target.value)}
               />
@@ -146,8 +160,9 @@ export default function EditTaskDialog({isEditDialogOpen, setIsEditDialogOpen, o
 
         </DialogContent>
         <DialogActions>
+          <Button color="error" onClick={deleteTask}>Delete</Button>
           <Button color="info" onClick={handleClose}>Cancel</Button>
-          <Button color="info" onClick={createTask}>Create</Button>
+          <Button color="info" onClick={updateTask}>Update</Button>
         </DialogActions>
       </Dialog>
   );
