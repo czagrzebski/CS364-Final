@@ -1,7 +1,7 @@
 const db = require('../db/db');
 
 const getAllProjects = async (req, res, next) => {
-    db.raw('SELECT * FROM Project')
+    db.raw('SELECT * FROM Project JOIN Department ON Project.DeptId = Department.DeptId')
         .then((projects) => {
             res.json(projects);
         }).catch((err) => {

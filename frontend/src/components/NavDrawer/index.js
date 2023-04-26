@@ -2,7 +2,6 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
@@ -14,6 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import GroupsIcon from '@mui/icons-material/Groups';
 import TasksIcon from '@mui/icons-material/Task';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import { Link } from 'react-router-dom';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 
@@ -77,6 +77,17 @@ export default function NavDrawer() {
                             <GroupsIcon />
                         </ListItemIcon>
                         <ListItemText primary="Users" />
+                    </ListItemButton>
+                </ListItem>
+            </Link>
+
+            <Link to="/metrics" style={linkStyles}>
+                <ListItem disablePadding>
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <AssessmentIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Metrics" />
                     </ListItemButton>
                 </ListItem>
             </Link>

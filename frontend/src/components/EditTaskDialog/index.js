@@ -90,7 +90,7 @@ export default function EditTaskDialog({isOpen, setIsOpen, onTaskUpdate, task}) 
 
   return (
       <Dialog open={isOpen} onClose={handleClose}>
-        <DialogTitle>Edit Task</DialogTitle>
+        <DialogTitle>Edit Task "{task.TaskTitle}"</DialogTitle>
         <DialogContent>
           <FormControl sx={{ m: 1, minWidth: 475 }}>
               <TextField

@@ -9,8 +9,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import api from '../../services/api';
 import { useNotification } from '../../components/NotificationProvider';
 
-
-
 export default function CreateTaskDialog({isCreateDialogOpen, setIsCreateDialogOpen, onTaskUpdate}) {
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
