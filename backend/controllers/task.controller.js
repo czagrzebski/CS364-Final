@@ -1,7 +1,7 @@
 const db = require("../db/db")
 
 const getAllTasks = async (req, res, next) => {
-    db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, Project.ProjectId, User.UserId, User.FirstName, User.LastName, AssignedTo.DateAssigned FROM Task LEFT JOIN AssignedTo ON Task.TaskId = AssignedTo.TaskId JOIN Project ON  Task.ProjectId = Project.ProjectId LEFT JOIN User ON AssignedTo.UserId = User.UserId ORDER BY Task.TaskDueDate ASC')
+    db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, Project.ProjectId, User.UserId, User.FirstName, User.LastName, AssignedTo.DateAssigned FROM Task LEFT JOIN AssignedTo ON Task.TaskId = AssignedTo.TaskId JOIN Project ON  Task.ProjectId = Project.ProjectId LEFT JOIN User ON AssignedTo.UserId = User.UserId WHERE Project.ProjectActive = 1 ORDER BY Task.TaskDueDate ASC')
         .then((tasks) => {
             res.json(tasks);
         }).catch((err) => {

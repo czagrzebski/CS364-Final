@@ -4,10 +4,10 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 async function getAllUsers(req, res, next) {
-    const allUsers = await db.raw('SELECT UserId, FirstName, LastName FROM User')
+    const allUsers = await db.raw('SELECT User.UserId, FirstName, LastName, Username, Role, Department.DeptName, Department.DeptId FROM User JOIN Department ON User.DeptId = Department.DeptId')
         .catch((err) => {
             err.status = 400;
-            error.message = "Failed to fetch users";
+            err.message = "Failed to fetch users";
             next(err);
         });
 
@@ -37,6 +37,43 @@ async function getUserById(req, res, next) {
     }
         
     res.json(user);
+}
+
+async function updateUser(req, res, next) {
+    const {FirstName, LastName, Username, Password, Role, DeptId, UserId} = req.body;
+
+    if (!FirstName || !LastName || !Username || !Role || !DeptId) {
+        next(new Error("All fields are required"));
+        return;
+    }
+
+    if(Password.length > 0) {
+        bcrypt.hash(Password, saltRounds, (err, hash) => {
+            if (err) {
+                err.status = 400;
+                err.message = "Failed to update user: " + err.message;
+                next(err);
+                return;
+            }
+            db.raw('UPDATE User SET FirstName = ?, LastName = ?, Username = ?, Password = ?, Role = ?, DeptId = ? WHERE UserId = ?', [FirstName, LastName, Username, hash, Role, DeptId, UserId])
+                .then(() => {
+                    res.json("User updated successfully");
+                }).catch((err) => {
+                    err.status = 400;
+                    err.message = "Failed to update user: " + err.message;
+                    next(err);
+                })
+            })
+    } else {
+        db.raw('UPDATE User SET FirstName = ?, LastName = ?, Username = ?, Role = ?, DeptId = ? WHERE UserId = ?', [FirstName, LastName, Username, Role, DeptId, UserId])
+            .then(() => {
+                res.json("User updated successfully");
+            }).catch((err) => {
+                err.status = 400;
+                err.message = "Failed to update user: " + err.message;
+                next(err);
+            })
+    }
 }
 
 async function createUser(req, res, next) {
@@ -76,7 +113,7 @@ async function createUser(req, res, next) {
         // INSERT INTO User (FirstName, LastName, Username, Password, Role, DeptId) VALUES (?, ?, ?, ?, ?, ?) [FirstName, LastName, Username, hash, Role, DeptId] 
         db('User').insert({FirstName: FirstName, LastName: LastName, Username:Username, Password:hash, Role:Role, DeptId:DeptId})
             .then(() => {
-                res.json({message: "User created successfully"});
+                res.json("User created successfully");
             })
             .catch((err) => { 
                 err.status = 400;
@@ -87,5 +124,5 @@ async function createUser(req, res, next) {
 } 
 
 module.exports = {
-    getAllUsers, getUserById, createUser
+    getAllUsers, getUserById, createUser, updateUser
 };

@@ -66,14 +66,14 @@ INSERT INTO [Department] ([DeptName]) VALUES ('Sales');
 INSERT INTO [Department] ([DeptName]) VALUES ('Accounting');
 
 /* INSERT Software Department */
-INSERT INTO [User] ([FirstName], [LastName], [Username], [Password], [Role], [DeptId]) VALUES ('John', 'Smith', 'jsmith', 'password', 'Software Engineering Manager', 1);
-INSERT INTO [User] ([FirstName], [LastName], [Username], [Password], [Role], [DeptId]) VALUES ('Jane', 'Doe', 'jdoe', 'password', 'Software Engineer', 1);
-INSERT INTO [User] ([FirstName], [LastName], [Username], [Password], [Role], [DeptId]) VALUES ('Betty', 'Quinn', 'bquinn', 'password', 'Software Engineer Intern', 1);
+INSERT INTO [User] ([FirstName], [LastName], [Username], [Password], [Role], [DeptId]) VALUES ('John', 'Smith', 'jsmith', '$2b$10$5HZTAHtgy741Z7QZ5J2Q.eLk30i7iHkITSHr0dIW3rpcENzTmw42e', 'Software Engineering Manager', 1);
+INSERT INTO [User] ([FirstName], [LastName], [Username], [Password], [Role], [DeptId]) VALUES ('Jane', 'Doe', 'jdoe', '$2b$10$5HZTAHtgy741Z7QZ5J2Q.eLk30i7iHkITSHr0dIW3rpcENzTmw42e', 'Software Engineer', 1);
+INSERT INTO [User] ([FirstName], [LastName], [Username], [Password], [Role], [DeptId]) VALUES ('Betty', 'Quinn', 'bquinn', '$2b$10$5HZTAHtgy741Z7QZ5J2Q.eLk30i7iHkITSHr0dIW3rpcENzTmw42e', 'Software Engineer Intern', 1);
 
 /* INSERT IT Department (Sarah, Bill, Joe) */
-INSERT INTO [User] ([FirstName], [LastName], [Username], [Password], [Role], [DeptId]) VALUES ('Sarah', 'Jones', 'sjones', 'password', 'IT Manager', 2);
-INSERT INTO [User] ([FirstName], [LastName], [Username], [Password], [Role], [DeptId]) VALUES ('Bill', 'Smith', 'bsmith', 'password', 'IT Technician', 2);
-INSERT INTO [User] ([FirstName], [LastName], [Username], [Password], [Role], [DeptId]) VALUES ('Joe', 'Johnson', 'jjohnson', 'password', 'IT Network Manager', 2);
+INSERT INTO [User] ([FirstName], [LastName], [Username], [Password], [Role], [DeptId]) VALUES ('Sarah', 'Jones', 'sjones', '$2b$10$5HZTAHtgy741Z7QZ5J2Q.eLk30i7iHkITSHr0dIW3rpcENzTmw42e', 'IT Manager', 2);
+INSERT INTO [User] ([FirstName], [LastName], [Username], [Password], [Role], [DeptId]) VALUES ('Bill', 'Smith', 'bsmith', '$2b$10$5HZTAHtgy741Z7QZ5J2Q.eLk30i7iHkITSHr0dIW3rpcENzTmw42e', 'IT Technician', 2);
+INSERT INTO [User] ([FirstName], [LastName], [Username], [Password], [Role], [DeptId]) VALUES ('Joe', 'Johnson', 'jjohnson', '$2b$10$5HZTAHtgy741Z7QZ5J2Q.eLk30i7iHkITSHr0dIW3rpcENzTmw42e', 'IT Network Manager', 2);
 
 /* INSERT A FEW PROJECTS */
 INSERT INTO [Project] ([ProjectTitle], [ProjectActive], [DeptId]) VALUES ('Robot Inventory System Integration', 1, 1);
