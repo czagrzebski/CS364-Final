@@ -50,6 +50,7 @@ export function NotificationProvider(props) {
               <SnackbarAlert
                 onClose={handleClose}
                 severity={severity ? severity : "success"}
+                sx={{color: 'white'}}
               >
                 {message}
               </SnackbarAlert>

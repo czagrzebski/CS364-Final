@@ -12,6 +12,7 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EditTaskDialog from "../EditTaskDialog";
+import { Tooltip } from "@mui/material";
 
 export default function TaskTable({
   taskList,
@@ -92,9 +93,11 @@ export default function TaskTable({
                     )}
                   </IconButton>
                 </TableCell>
-                <TableCell component="th" scope="row">
-                  {task.TaskTitle}
-                </TableCell>
+                <Tooltip title={task.TaskDescription} placement="bottom-start" arrow>
+                  <TableCell component="th" scope="row">
+                    {task.TaskTitle}
+                  </TableCell>
+                </Tooltip>
                 <TableCell align="right">{task.ProjectTitle}</TableCell>
                 <TableCell align="right">
                   {task.FirstName} {task.LastName}

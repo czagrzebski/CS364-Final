@@ -129,8 +129,6 @@ const insertTask = async (req, res, next) => {
 const deleteTaskById = async (req, res, next) => {
     const {TaskId} = req.body;
 
-    console.log(req.body)
-
     if (!TaskId) {
         next(new Error("Task ID is required"));
     }
@@ -166,7 +164,6 @@ const deleteTaskById = async (req, res, next) => {
             err.message = "Failed to delete task";
             next(err);
         });
-
 }
 
 module.exports = {
