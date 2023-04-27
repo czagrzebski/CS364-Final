@@ -2,7 +2,7 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from 'react-router-dom';
-import { Dashboard, Tasks, Projects, Login } from './pages';
+import { Dashboard, Tasks, Projects, Login, Users, Departments, Metrics } from './pages';
 import { Box } from '@mui/material';
 import { Navigate } from 'react-router-dom';
 
@@ -19,11 +19,14 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Dashboard/>,
-    errorElement: <h1>404 Not Found</h1>,
+    errorElement: <h1>Error</h1>,
     children: [
       {index: true, element: <Navigate to="/tasks" replace />},
       { path: 'tasks', element: <Tasks />, name: 'Tasks'},
-      { path: 'projects', element: <Projects />, name: 'Projects'}
+      { path: 'projects', element: <Projects />, name: 'Projects'},
+      { path: 'users', element: <Users />, name: 'Users'},
+      { path: 'departments', element: <Departments />, name: 'Departments'},
+      { path: 'metrics', element: <Metrics />, name: 'Metrics'}
     ],
   },
   {

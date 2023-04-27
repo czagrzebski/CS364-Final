@@ -6,21 +6,21 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EditTaskDialog from "../EditTaskDialog";
 import { Tooltip } from "@mui/material";
+import api from "../../services/api";
+import CreateTaskDialog from "../CreateTaskDialog";
 
 export default function TaskTable({
   taskList,
-  addTask,
-  updateTask,
-  onTaskUpdate,
+  onUpdate,
 }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
   const [selectedTask, setSelectedTask] = React.useState({});
 
   const formatDate = (dateString) => {
@@ -36,7 +36,7 @@ export default function TaskTable({
     return formattedDate;
   };
 
-  const onItemChecked = (event, task) => {
+  const onTaskChecked = (event, task) => {
     event.stopPropagation();
     task.TaskCompleted = !task.TaskCompleted;
     updateTask(task);
@@ -48,6 +48,21 @@ export default function TaskTable({
     setIsEditDialogOpen(true);
   };
 
+  const updateTask = (task) => {
+    api.put('/task/update', {
+      TaskId: task.TaskId,
+      TaskTitle: task.TaskTitle,
+      TaskDescription: task.TaskDescription,
+      TaskCompleted: task.TaskCompleted,
+      TaskDateAssigned: task.TaskDateAssigned,
+      TaskDueDate: task.TaskDueDate,
+      ProjectId: task.ProjectId,
+      UserId: task.UserId,
+    }).then((response) => {
+      onUpdate();
+    });
+  };
+
   return (
     <div>
       <TableContainer component={Paper}>
@@ -55,7 +70,7 @@ export default function TaskTable({
           <TableHead>
             <TableRow>
               <TableCell padding="checkbox">
-                <IconButton onClick={addTask}>
+                <IconButton onClick={() => setIsCreateDialogOpen(true)}>
                   <AddCircleIcon />
                 </IconButton>
               </TableCell>
@@ -84,7 +99,7 @@ export default function TaskTable({
                 <TableCell padding="checkbox">
                   <IconButton
                     aria-label="delete"
-                    onClick={(event) => onItemChecked(event, task)}
+                    onClick={(event) => onTaskChecked(event, task)}
                   >
                     {task.TaskCompleted ? (
                       <TaskAltIcon />
@@ -93,7 +108,11 @@ export default function TaskTable({
                     )}
                   </IconButton>
                 </TableCell>
-                <Tooltip title={task.TaskDescription} placement="bottom-start" arrow>
+                <Tooltip
+                  title={task.TaskDescription}
+                  placement="bottom-start"
+                  arrow
+                >
                   <TableCell component="th" scope="row">
                     {task.TaskTitle}
                   </TableCell>
@@ -119,10 +138,17 @@ export default function TaskTable({
       </TableContainer>
       {isEditDialogOpen ? (
         <EditTaskDialog
+          isDialogOpen={isEditDialogOpen}
+          setIsDialogOpen={setIsEditDialogOpen}
+          onUpdate={onUpdate}
           task={selectedTask}
-          isOpen={isEditDialogOpen}
-          setIsOpen={setIsEditDialogOpen}
-          onTaskUpdate={onTaskUpdate}
+        />
+      ) : null}
+      {isCreateDialogOpen ? (
+        <CreateTaskDialog
+          isDialogOpen={isCreateDialogOpen}
+          setIsDialogOpen={setIsCreateDialogOpen}
+          onUpdate={onUpdate}
         />
       ) : null}
     </div>

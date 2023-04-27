@@ -9,7 +9,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import api from '../../services/api';
 import { useNotification } from '../../components/NotificationProvider';
 
-export default function CreateTaskDialog({isCreateDialogOpen, setIsCreateDialogOpen, onTaskUpdate}) {
+export default function CreateTaskDialog({isDialogOpen, setIsDialogOpen, onUpdate}) {
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [taskDueDate, setTaskDueDate] = useState(null);
@@ -22,21 +22,27 @@ export default function CreateTaskDialog({isCreateDialogOpen, setIsCreateDialogO
   const { createNotification } = useNotification();
 
   useEffect(() => {
+    if(!isDialogOpen) {
+      return;
+    }
+    
     // Get project list for select
     getProjectList();
 
     // Get user list for select
     getUserList();
-  }, [])
+  }, [isDialogOpen])
 
   const handleClose = () => {
-    setIsCreateDialogOpen(false);
+    setIsDialogOpen(false);
     setTaskTitle('');
     setTaskDescription('');
     setTaskDueDate('');
     setTaskProject('');
     setTaskDueDateString('')
     setTaskAssignee(-1);
+    setUserList([]);
+    setTaskProjectList([]);
   };
 
   const getProjectList = () => {
@@ -66,7 +72,7 @@ export default function CreateTaskDialog({isCreateDialogOpen, setIsCreateDialogO
       UserId: taskAssignee
     }).then((response) => {
       createNotification("Task Successfully Created", "success");
-      onTaskUpdate();
+      onUpdate();
       handleClose(); 
     }).catch((error) => {
       createNotification("Error Creating Task", "error");
@@ -74,7 +80,7 @@ export default function CreateTaskDialog({isCreateDialogOpen, setIsCreateDialogO
   };
 
   return (
-      <Dialog open={isCreateDialogOpen} onClose={handleClose}>
+      <Dialog open={isDialogOpen} onClose={handleClose}>
         <DialogTitle>Create Task</DialogTitle>
         <DialogContent>
           <FormControl sx={{ m: 1, minWidth: 475 }}>

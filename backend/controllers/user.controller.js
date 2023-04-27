@@ -123,6 +123,33 @@ async function createUser(req, res, next) {
         })
 } 
 
+async function deleteUser(req, res, next) {
+    const {UserId} = req.body;
+
+    if (!UserId) {
+        next(new Error("User ID is required"));
+        return;
+    }
+
+    await db.raw('DELETE FROM User WHERE UserId = ?', [UserId])
+        .catch((err) => {
+            err.status = 400;
+            err.message = "Failed to delete user";
+            next(err);
+        });
+    
+    db.raw('DELETE FROM AssignedTo WHERE UserId = ?', [UserId])
+        .then(() => {
+            res.json("User deleted successfully");
+        })
+        .catch((err) => {
+            err.status = 400;
+            err.message = "Failed to delete user";
+            next(err);
+        });
+}
+
+
 module.exports = {
-    getAllUsers, getUserById, createUser, updateUser
+    getAllUsers, getUserById, createUser, updateUser, deleteUser
 };

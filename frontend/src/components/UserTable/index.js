@@ -8,23 +8,20 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import CreateProjectDialog from "../CreateProjectDialog";
-import EditProjectDialog from "../EditProjectDialog";
+import CreateUserDialog from "../CreateUserDialog";
+import EditUserDialog from "../EditUserDialog";
 
-export default function ProjectTable({
-  projectList,
-  onUpdate,
-}) {
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+export default function TaskTable({ userList, onUpdate }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState({});
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState({});
 
-  const onEditProjectSelected = (event, project) => {
+  const onEditUserSelected = (event, user) => {
     event.stopPropagation();
-    setSelectedProject(project);
+    setSelectedUser(user);
     setIsEditDialogOpen(true);
   };
-  
+
   return (
     <div>
       <TableContainer component={Paper}>
@@ -37,51 +34,49 @@ export default function ProjectTable({
                 </IconButton>
               </TableCell>
               <TableCell>Name</TableCell>
+              <TableCell>Username</TableCell>
+              <TableCell>Role</TableCell>
               <TableCell align="right">Department</TableCell>
-              <TableCell align="right">Active</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {projectList.length === 0 && (
+            {userList.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} align="center">
-                  No projects found
+                  No users found
                 </TableCell>
               </TableRow>
             )}
-            {projectList.map((project) => (
+            {userList.map((user) => (
               <TableRow
-                key={project.ProjectId}
+                key={user.UserId}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                onClick={(event) => onEditProjectSelected(event, project)}
+                onClick={(event) => onEditUserSelected(event, user)}
                 hover
               >
-                <TableCell padding="checkbox"> </TableCell>
-                <TableCell component="th" scope="row">
-                  {project.ProjectTitle}
-                </TableCell>
-                <TableCell align="right">{project.DeptName}</TableCell>
-                <TableCell align="right">
-                  {project.ProjectActive ? "Yes" : "No"}
-                </TableCell>
+                <TableCell padding="checkbox" />
+                <TableCell>{user.FirstName + " " + user.LastName}</TableCell>
+                <TableCell>{user.Username}</TableCell>
+                <TableCell>{user.Role}</TableCell>
+                <TableCell align="right">{user.DeptName}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
       {isCreateDialogOpen ? (
-        <CreateProjectDialog
+        <CreateUserDialog
           isDialogOpen={isCreateDialogOpen}
           setIsDialogOpen={setIsCreateDialogOpen}
           onUpdate={onUpdate}
         />
       ) : null}
       {isEditDialogOpen ? (
-        <EditProjectDialog
+        <EditUserDialog
           isDialogOpen={isEditDialogOpen}
           setIsDialogOpen={setIsEditDialogOpen}
           onUpdate={onUpdate}
-          project={selectedProject}
+          user={selectedUser}
         />
       ) : null}
     </div>

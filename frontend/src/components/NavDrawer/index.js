@@ -10,6 +10,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import PersonIcon from '@mui/icons-material/Person';
 import GroupsIcon from '@mui/icons-material/Groups';
 import TasksIcon from '@mui/icons-material/Task';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
@@ -74,9 +75,20 @@ export default function NavDrawer() {
                 <ListItem disablePadding>
                     <ListItemButton>
                         <ListItemIcon>
-                            <GroupsIcon />
+                            <PersonIcon />
                         </ListItemIcon>
                         <ListItemText primary="Users" />
+                    </ListItemButton>
+                </ListItem>
+            </Link>
+
+            <Link to="/departments" style={linkStyles}>
+                <ListItem disablePadding>
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <GroupsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Departments" />
                     </ListItemButton>
                 </ListItem>
             </Link>
@@ -91,6 +103,8 @@ export default function NavDrawer() {
                     </ListItemButton>
                 </ListItem>
             </Link>
+
+       
         </List>
         <Toolbar />
         </Drawer>
