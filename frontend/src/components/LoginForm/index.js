@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import authService from "../../services/auth.service";
 import {useNavigate} from "react-router-dom";
 
-import { Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox, Box, Alert, Typography, Container} from "@mui/material";
+import { Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox, Box, Alert, Typography, Container, Paper} from "@mui/material";
 
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
@@ -24,18 +24,18 @@ function LoginForm() {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs" sx={{zIndex: 1}}>
     <CssBaseline />
+    <Paper elevation={3} sx={{padding: "50px", backgroundColor: "primary.main"}}>
     <Box
       sx={{
-        marginTop: 8,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
       }}
     >
-      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-        <LockOutlinedIcon />
+      <Avatar sx={{ m: 1, backgroundColor: 'info.main' }}>
+        <LockOutlinedIcon backgroundColor="info"/>
       </Avatar>
       <Typography component="h1" variant="h5">
         Sign in to Taskify
@@ -83,6 +83,7 @@ function LoginForm() {
           type="submit"
           fullWidth
           variant="contained"
+          color="info"
           sx={{ mt: 3, mb: 2 }}
         >
           Sign In
@@ -90,6 +91,7 @@ function LoginForm() {
         {error ? <Alert severity="error">{error}</Alert> : null}
       </Box>
     </Box>
+    </Paper>
   </Container>
   );
 }

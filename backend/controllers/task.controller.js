@@ -5,7 +5,7 @@ const getAllTasks = async (req, res, next) => {
     const UserId = req.query.UserId;
 
     if(showAllTasks === false) {
-        db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, Project.ProjectId, User.UserId, User.FirstName, User.LastName, AssignedTo.DateAssigned FROM Task LEFT JOIN AssignedTo ON Task.TaskId = AssignedTo.TaskId JOIN Project ON  Task.ProjectId = Project.ProjectId LEFT JOIN User ON AssignedTo.UserId = User.UserId WHERE User.UserId = ? ORDER BY Task.TaskDueDate ASC', [UserId])
+        db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, Project.ProjectId, User.UserId, User.FirstName, User.LastName, AssignedTo.DateAssigned FROM Task LEFT JOIN AssignedTo ON Task.TaskId = AssignedTo.TaskId JOIN Project ON  Task.ProjectId = Project.ProjectId LEFT JOIN User ON AssignedTo.UserId = User.UserId WHERE User.UserId = ? AND Project.ProjectActive = 1 ORDER BY Task.TaskDueDate ASC', [UserId])
         .then((tasks) => {
             res.json(tasks);
         }).catch((err) => {
@@ -15,7 +15,7 @@ const getAllTasks = async (req, res, next) => {
             next(err);
         });
     } else {
-        db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, Project.ProjectId, User.UserId, User.FirstName, User.LastName, AssignedTo.DateAssigned FROM Task LEFT JOIN AssignedTo ON Task.TaskId = AssignedTo.TaskId JOIN Project ON  Task.ProjectId = Project.ProjectId LEFT JOIN User ON AssignedTo.UserId = User.UserId ORDER BY Task.TaskDueDate ASC')
+        db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, Project.ProjectId, User.UserId, User.FirstName, User.LastName, AssignedTo.DateAssigned FROM Task LEFT JOIN AssignedTo ON Task.TaskId = AssignedTo.TaskId JOIN Project ON  Task.ProjectId = Project.ProjectId LEFT JOIN User ON AssignedTo.UserId = User.UserId WHERE Project.ProjectActive = 1 ORDER BY Task.TaskDueDate ASC')
         .then((tasks) => {
             res.json(tasks);
         }).catch((err) => {

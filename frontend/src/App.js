@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import authService from './services/auth.service';
 import {
-  BrowserRouter, Route, Routes, 
+  HashRouter, Route, Routes, 
 } from 'react-router-dom';
 import { Dashboard, Login } from './pages';
 import { Box } from '@mui/material';
@@ -41,7 +41,7 @@ function App() {
   return (
     <Box sx={rootStyle}>
       <Box sx={contentStyle} >
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route exact path="*" element={<ProtectedRoutes />}>
             <Route exact path="*" element={<Navigate to="/dashboard" />} />
@@ -49,7 +49,7 @@ function App() {
           </Route>
           <Route path="login/*" element={<Login />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
       </Box>
     </Box>
   );
