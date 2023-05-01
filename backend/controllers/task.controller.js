@@ -1,7 +1,11 @@
 const db = require("../db/db")
 
 const getAllTasks = async (req, res, next) => {
-    db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, Project.ProjectId, User.UserId, User.FirstName, User.LastName, AssignedTo.DateAssigned FROM Task LEFT JOIN AssignedTo ON Task.TaskId = AssignedTo.TaskId JOIN Project ON  Task.ProjectId = Project.ProjectId LEFT JOIN User ON AssignedTo.UserId = User.UserId WHERE Project.ProjectActive = 1 ORDER BY Task.TaskDueDate ASC')
+    const showAllTasks = (req.query.showAllTasks === 'true');
+    const UserId = req.query.UserId;
+
+    if(showAllTasks === false) {
+        db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, Project.ProjectId, User.UserId, User.FirstName, User.LastName, AssignedTo.DateAssigned FROM Task LEFT JOIN AssignedTo ON Task.TaskId = AssignedTo.TaskId JOIN Project ON  Task.ProjectId = Project.ProjectId LEFT JOIN User ON AssignedTo.UserId = User.UserId WHERE User.UserId = ? ORDER BY Task.TaskDueDate ASC', [UserId])
         .then((tasks) => {
             res.json(tasks);
         }).catch((err) => {
@@ -10,12 +14,21 @@ const getAllTasks = async (req, res, next) => {
             err.message = "Failed to fetch tasks";
             next(err);
         });
-    }
+    } else {
+        db.raw('SELECT Task.TaskId, Task.TaskTitle, Task.TaskDescription, Task.TaskCompleted, Task.TaskDueDate, Project.ProjectTitle, Project.ProjectId, User.UserId, User.FirstName, User.LastName, AssignedTo.DateAssigned FROM Task LEFT JOIN AssignedTo ON Task.TaskId = AssignedTo.TaskId JOIN Project ON  Task.ProjectId = Project.ProjectId LEFT JOIN User ON AssignedTo.UserId = User.UserId ORDER BY Task.TaskDueDate ASC')
+        .then((tasks) => {
+            res.json(tasks);
+        }).catch((err) => {
+            console.log(err)
+            err.status = 400;
+            err.message = "Failed to fetch tasks";
+            next(err);
+        });
+    }  
+}
 
 const getTaskById = async (req, res, next) => {
     const {TaskId} = req.body;
-
-    console.log('Processing request for task with ID: ' + TaskId + '...')
 
     if (!TaskId || TaskId == -1) {
         next(new Error("Task ID is required"));
@@ -37,7 +50,6 @@ const getTaskById = async (req, res, next) => {
         next(new Error("Task not found"));
         return;
     }
-        
     res.json(task);
 }
 
@@ -166,6 +178,33 @@ const deleteTaskById = async (req, res, next) => {
         });
 }
 
+const mostProductiveThanAverageEmployee = async (req, res, next) => {
+
+    let query = `SELECT User.FirstName, User.LastName, count(*) numTasksCompleted
+                   FROM User JOIN AssignedTo JOIN Task
+                     ON User.UserId = AssignedTo.UserId 
+                        AND Task.TaskId = AssignedTo.TaskId
+                    WHERE Task.TaskCompleted = 1
+                    GROUP BY User.UserId
+                    HAVING count(*) >=  (SELECT avg(NumCompletedTasks) as AverageCompletedTasks FROM   
+                                            (SELECT User.FirstName, User.LastName, count(*) as NumCompletedTasks 
+                                               FROM User JOIN AssignedTo JOIN Task
+                                                 ON User.UserId = AssignedTo.UserId 
+                                                    AND Task.TaskId = AssignedTo.TaskId
+                                               WHERE Task.TaskCompleted = 1
+                                               GROUP BY User.UserId) as CompletedTasks)
+                    ORDER BY numTasksCompleted DESC;`
+                                    
+    
+    db.raw(query).then((result) => { 
+        res.json(result);
+    }).catch((err) => {
+        err.status = 400;
+        err.message = "Failed to get most productive employees";
+        next(err);
+    });
+}
+                         
 module.exports = {
-    getAllTasks, updateTaskById, insertTask, getTaskById, deleteTaskById
+    getAllTasks, updateTaskById, insertTask, getTaskById, deleteTaskById, mostProductiveThanAverageEmployee
 }

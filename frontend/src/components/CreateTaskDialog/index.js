@@ -46,7 +46,7 @@ export default function CreateTaskDialog({isDialogOpen, setIsDialogOpen, onUpdat
   };
 
   const getProjectList = () => {
-    api.get('project/all')
+    api.get('/project/all')
       .then((response) => {
         setTaskProjectList(response.data);
       }).catch((error) => {
@@ -55,7 +55,7 @@ export default function CreateTaskDialog({isDialogOpen, setIsDialogOpen, onUpdat
   };
 
   const getUserList = () => {
-    api.get('user/all')
+    api.get('/user/all')
       .then((response) => {
         setUserList(response.data);
       }).catch((error) => {
@@ -64,7 +64,7 @@ export default function CreateTaskDialog({isDialogOpen, setIsDialogOpen, onUpdat
   };
 
   const createTask = () => {
-    api.post('task/create', {
+    api.post('/task/create', {
       TaskTitle: taskTitle,
       TaskDescription: taskDescription,
       TaskDueDate: taskDueDateString,

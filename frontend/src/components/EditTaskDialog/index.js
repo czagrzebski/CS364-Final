@@ -51,7 +51,7 @@ export default function EditTaskDialog({
 
   const getProjectList = () => {
     api
-      .get("project/all")
+      .get("/project/all")
       .then((response) => {
         setTaskProjectList(response.data);
       })
@@ -62,7 +62,7 @@ export default function EditTaskDialog({
 
   const getUserList = () => {
     api
-      .get("user/all")
+      .get("/user/all")
       .then((response) => {
         setUserList(response.data);
       })
@@ -73,7 +73,7 @@ export default function EditTaskDialog({
 
   const deleteTask = () => {
     api
-      .put("task/delete", {
+      .put("/task/delete", {
         TaskId: task.TaskId,
       })
       .then((response) => {
@@ -89,7 +89,7 @@ export default function EditTaskDialog({
 
   const updateTask = () => {
     api
-      .put("task/update", {
+      .put("/task/update", {
         TaskId: task.TaskId,
         TaskTitle: taskTitle,
         TaskDescription: taskDescription,

@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CreateUserDialog from "../CreateUserDialog";
 import EditUserDialog from "../EditUserDialog";
+import { Typography, Toolbar } from "@mui/material";
 
 export default function TaskTable({ userList, onUpdate }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -24,6 +25,7 @@ export default function TaskTable({ userList, onUpdate }) {
 
   return (
     <div>
+      <EnhancedToolBar />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -80,5 +82,27 @@ export default function TaskTable({ userList, onUpdate }) {
         />
       ) : null}
     </div>
+  );
+}
+
+
+function EnhancedToolBar() {
+  return (
+    <Toolbar
+      sx={{
+        pl: { sm: 3 },
+        pr: { xs: 1, sm: 2 },
+        backgroundColor: "#1E1E1E"
+      }}
+    >
+      <Typography
+        sx={{ flex: '1 1 80%' }}
+        variant="h6"
+        id="tableTitle"
+        component="div"
+      >
+        User List
+      </Typography>
+    </Toolbar>
   );
 }

@@ -11,13 +11,23 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EditTaskDialog from "../EditTaskDialog";
-import { Tooltip } from "@mui/material";
+import { Tooltip, Toolbar, Typography } from "@mui/material";
 import api from "../../services/api";
 import CreateTaskDialog from "../CreateTaskDialog";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+import FilterListIcon from '@mui/icons-material/FilterList';
 
 export default function TaskTable({
   taskList,
   onUpdate,
+  hideCompleted,
+  setHideCompleted,
+  showAllTasks,
+  setShowAllTasks
 }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
@@ -65,6 +75,7 @@ export default function TaskTable({
 
   return (
     <div>
+      <EnhancedTaskToolBar isChecked={hideCompleted} setIsChecked={setHideCompleted} showAllTasks={showAllTasks} setShowAllTasks={setShowAllTasks} />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -84,13 +95,14 @@ export default function TaskTable({
           <TableBody>
             {taskList.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={6} align="center">
                   No tasks found
                 </TableCell>
               </TableRow>
             )}
             {taskList.map((task) => (
-              <TableRow
+              (hideCompleted && task.TaskCompleted) ? null : (
+                <TableRow
                 key={task.TaskId}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 onClick={(event) => onEditTask(event, task)}
@@ -118,8 +130,13 @@ export default function TaskTable({
                   </TableCell>
                 </Tooltip>
                 <TableCell align="right">{task.ProjectTitle}</TableCell>
-                <TableCell align="right">
-                  {task.FirstName} {task.LastName}
+                <TableCell 
+                  align="right"   
+                  sx={{
+                    color:
+                      task.UserId ? "white" : "red",
+                  }}>
+                  {task.UserId ? task.FirstName + " " + task.LastName : "Unassigned"}
                 </TableCell>
                 <TableCell align="right">{task.DateAssigned}</TableCell>
                 <TableCell
@@ -132,6 +149,8 @@ export default function TaskTable({
                   {formatDate(task.TaskDueDate)}
                 </TableCell>
               </TableRow>
+            )
+              
             ))}
           </TableBody>
         </Table>
@@ -154,3 +173,59 @@ export default function TaskTable({
     </div>
   );
 }
+
+function EnhancedTaskToolBar({ isChecked, setIsChecked, showAllTasks, setShowAllTasks }) {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <Toolbar
+      sx={{
+        pl: { sm: 3 },
+        pr: { xs: 1, sm: 2 },
+        backgroundColor: "#1E1E1E"
+      }}
+    >
+      <Typography
+        sx={{ flex: '1 1 80%' }}
+        variant="h6"
+        id="tableTitle"
+        component="div"
+      >
+        Task List
+      </Typography>
+      <IconButton onClick={handleClick}>
+        <FilterListIcon />
+      </IconButton>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <MenuItem>
+          <FormGroup>
+            <FormControlLabel control={<Switch checked={isChecked} onChange={(event) => setIsChecked(event.target.checked)} color="info" />} label="Show/Hide Completed Tasks" labelPlacement="end" />
+          </FormGroup>
+        </MenuItem>
+        <MenuItem>
+          <FormGroup>
+            <FormControlLabel control={<Switch checked={showAllTasks} onChange={(event) => setShowAllTasks(event.target.checked)} color="info" />} label="Show All User Tasks" labelPlacement="end" />
+          </FormGroup>
+        </MenuItem>
+      </Menu>
+    </Toolbar>
+  );
+}
+

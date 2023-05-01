@@ -42,7 +42,7 @@ export default function CreateProjectDialog({
 
   const getAllDepartments = () => {
     api
-      .get("department/all")
+      .get("/department/all")
       .then((response) => {
         setDepartmentList(response.data);
       })
@@ -53,7 +53,7 @@ export default function CreateProjectDialog({
 
   const createProject = () => {
     api
-      .post("project/create", {
+      .post("/project/create", {
         ProjectTitle: projectTitle,
         DeptId: projectDepartment,
       })

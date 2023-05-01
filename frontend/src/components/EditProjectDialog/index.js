@@ -42,7 +42,7 @@ export default function EditProjectDialog({
 
   const getAllDepartments = () => {
     api
-      .get("department/all")
+      .get("/department/all")
       .then((response) => {
         setDepartmentList(response.data);
       })
@@ -53,7 +53,7 @@ export default function EditProjectDialog({
 
   const updateProject = () => {
     api
-      .put("project/update", {
+      .put("/project/update", {
         ProjectId: project.ProjectId,
         ProjectTitle: projectTitle,
         DeptId: projectDepartment,

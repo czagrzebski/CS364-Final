@@ -12,7 +12,7 @@ export function Users() {
 
   const getAllUsers = () => {
     api
-      .get("user/all")
+      .get("/user/all")
       .then((response) => {
         setUserList(response.data);
       })

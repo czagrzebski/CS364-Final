@@ -51,7 +51,7 @@ export default function CreateUserDialog({
 
   const getAllDepartments = () => {
     api
-      .get("department/all")
+      .get("/department/all")
       .then((response) => {
         setDepartmentList(response.data);
       })
@@ -61,7 +61,7 @@ export default function CreateUserDialog({
   };
 
  const updateUser = () => {
-    api.put('user/update', {
+    api.put('/user/update', {
       UserId: user.UserId,
       FirstName: firstName,
       LastName: lastName,
@@ -80,7 +80,7 @@ export default function CreateUserDialog({
   };
 
   const deleteUser = () => {
-    api.put('user/delete', {
+    api.put('/user/delete', {
       UserId: user.UserId,
     }).then((response) => {
       createNotification("User deleted successfully", "success");

@@ -50,7 +50,7 @@ export default function CreateUserDialog({
 
   const getAllDepartments = () => {
     api
-      .get("department/all")
+      .get("/department/all")
       .then((response) => {
         setDepartmentList(response.data);
       })
@@ -61,7 +61,7 @@ export default function CreateUserDialog({
 
   const createUser = () => {
     api
-      .post("user/create", {
+      .post("/user/create", {
         FirstName: firstName,
         LastName: lastName,
         Username: userName,

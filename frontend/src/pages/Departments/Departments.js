@@ -11,7 +11,7 @@ export function Departments() {
   }, []);
 
   const getAllDepartments = () => {
-    api.get("department/all")
+    api.get("/department/all")
       .then((response) => {
         setDeptList(response.data);
       })

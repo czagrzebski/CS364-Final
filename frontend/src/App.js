@@ -1,10 +1,14 @@
+import React, { useEffect } from 'react';
+import authService from './services/auth.service';
 import {
-  createBrowserRouter,
-  RouterProvider,
+  BrowserRouter, Route, Routes, 
 } from 'react-router-dom';
-import { Dashboard, Tasks, Projects, Login, Users, Departments, Metrics } from './pages';
+import { Dashboard, Login } from './pages';
 import { Box } from '@mui/material';
 import { Navigate } from 'react-router-dom';
+import ProtectedRoutes from './components/ProtectedRoutes';
+import useUserStore from './utils/Stores';
+import { shallow } from 'zustand/shallow';
 
 const rootStyle =  {
   display: 'flex'
@@ -14,32 +18,38 @@ const contentStyle =  {
   flexGrow: 1
 }
 
-// Create a router using the new createBrowserRouter in V6
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Dashboard/>,
-    errorElement: <h1>Error</h1>,
-    children: [
-      {index: true, element: <Navigate to="/tasks" replace />},
-      { path: 'tasks', element: <Tasks />, name: 'Tasks'},
-      { path: 'projects', element: <Projects />, name: 'Projects'},
-      { path: 'users', element: <Users />, name: 'Users'},
-      { path: 'departments', element: <Departments />, name: 'Departments'},
-      { path: 'metrics', element: <Metrics />, name: 'Metrics'}
-    ],
-  },
-  {
-    path: '/login',
-    element: <Login />,
-  }
-])
-
 function App() {
+    const [loading, setLoading] = useUserStore(
+      (state) => [state.loading, state.setLoading],
+      shallow
+    )
+  
+  useEffect(() => {
+    //Attempt to get a new refresh token before loading dashboard
+    authService
+      .fetchRefreshToken()
+      .then(() => {
+        setLoading(false);
+      })
+      .catch(() => {
+       setLoading(false);
+      });
+
+    //Disable missing dependency warning
+    // eslint-disable-next-line
+  }, []);
   return (
     <Box sx={rootStyle}>
       <Box sx={contentStyle} >
-        <RouterProvider router={router} />
+      <BrowserRouter>
+        <Routes>
+          <Route exact path="*" element={<ProtectedRoutes />}>
+            <Route exact path="*" element={<Navigate to="/dashboard" />} />
+            <Route path="dashboard/*" element={<Dashboard />} />
+          </Route>
+          <Route path="login/*" element={<Login />} />
+        </Routes>
+      </BrowserRouter>
       </Box>
     </Box>
   );

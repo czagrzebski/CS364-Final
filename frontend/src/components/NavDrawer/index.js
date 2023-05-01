@@ -49,7 +49,7 @@ export default function NavDrawer() {
         </Toolbar>
         <Divider />
         <List>
-            <Link to="/tasks" style={linkStyles}>
+            <Link to="/dashboard/tasks" style={linkStyles}>
                 <ListItem disablePadding>
                     <ListItemButton>
                         <ListItemIcon>
@@ -60,7 +60,7 @@ export default function NavDrawer() {
                 </ListItem>
             </Link>
 
-            <Link to="/projects" style={linkStyles}>
+            <Link to="/dashboard/projects" style={linkStyles}>
                 <ListItem disablePadding>
                     <ListItemButton>
                         <ListItemIcon>
@@ -71,7 +71,7 @@ export default function NavDrawer() {
                 </ListItem>
             </Link>
 
-            <Link to="/users" style={linkStyles}>
+            <Link to="/dashboard/users" style={linkStyles}>
                 <ListItem disablePadding>
                     <ListItemButton>
                         <ListItemIcon>
@@ -82,7 +82,7 @@ export default function NavDrawer() {
                 </ListItem>
             </Link>
 
-            <Link to="/departments" style={linkStyles}>
+            <Link to="/dashboard/departments" style={linkStyles}>
                 <ListItem disablePadding>
                     <ListItemButton>
                         <ListItemIcon>
@@ -93,7 +93,7 @@ export default function NavDrawer() {
                 </ListItem>
             </Link>
 
-            <Link to="/metrics" style={linkStyles}>
+            <Link to="/dashboard/metrics" style={linkStyles}>
                 <ListItem disablePadding>
                     <ListItemButton>
                         <ListItemIcon>

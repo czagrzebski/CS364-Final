@@ -26,10 +26,8 @@ root.render(
     <LocalizationProvider dateAdapter={AdapterDayjs}>
     <ThemeProvider theme={theme}>
     <div>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-      </div>
+      <App />
+    </div>
     </ThemeProvider>
    </LocalizationProvider>
   </StyledEngineProvider>
