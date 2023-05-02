@@ -128,8 +128,6 @@ async function getNewToken(req, res) {
           console.log(err);
           res.status(500).send("An unknown error has occurred");
       });
-
- 
   });
 }
 
