@@ -179,7 +179,6 @@ const deleteTaskById = async (req, res, next) => {
 }
 
 const mostProductiveThanAverageEmployee = async (req, res, next) => {
-
     let query = `SELECT User.FirstName, User.LastName, count(*) numTasksCompleted
                    FROM User JOIN AssignedTo JOIN Task
                      ON User.UserId = AssignedTo.UserId 
@@ -206,12 +205,7 @@ const mostProductiveThanAverageEmployee = async (req, res, next) => {
 }
 
 const getMostProductiveEmployeeByDepartment = async (req, res, next) => {
-    const {DeptId} = req.body;
-
-    if (!DeptId) {
-        next(new Error("Department ID is required"));
-        return;
-    }
+    const DeptId = req.query.DeptId;
 
     let query = `SELECT FirstName, LastName, max(TaskCount) as TasksCompleted FROM
     (SELECT User.FirstName as FirstName, User.LastName as LastName, count(Task.TaskTitle) as TaskCount
@@ -222,7 +216,11 @@ const getMostProductiveEmployeeByDepartment = async (req, res, next) => {
         GROUP BY User.UserId) as TaskDepartmentCompleted`
 
     db.raw(query, [DeptId]).then((result) => {
-        res.json(result);
+        if(result.length == 0) {
+            res.json("No employees found");
+        } else {
+            res.json(result[0]);
+        }
     }).catch((err) => {
         err.status = 400;
         err.message = "Failed to get most productive employee by department";
