@@ -204,7 +204,32 @@ const mostProductiveThanAverageEmployee = async (req, res, next) => {
         next(err);
     });
 }
-                         
+
+const getMostProductiveEmployeeByDepartment = async (req, res, next) => {
+    const {DeptId} = req.body;
+
+    if (!DeptId) {
+        next(new Error("Department ID is required"));
+        return;
+    }
+
+    let query = `SELECT FirstName, LastName, max(TaskCount) as TasksCompleted FROM
+    (SELECT User.FirstName as FirstName, User.LastName as LastName, count(Task.TaskTitle) as TaskCount
+    FROM User JOIN AssignedTo JOIN Task 
+        ON User.UserId = AssignedTo.UserId
+        AND Task.TaskId = AssignedTo.TaskId
+        WHERE Task.TaskCompleted = 1 AND User.DeptId = ?
+        GROUP BY User.UserId) as TaskDepartmentCompleted`
+
+    db.raw(query, [DeptId]).then((result) => {
+        res.json(result);
+    }).catch((err) => {
+        err.status = 400;
+        err.message = "Failed to get most productive employee by department";
+        next(err);
+    });
+}
+                   
 module.exports = {
-    getAllTasks, updateTaskById, insertTask, getTaskById, deleteTaskById, mostProductiveThanAverageEmployee
+    getAllTasks, updateTaskById, insertTask, getTaskById, deleteTaskById, mostProductiveThanAverageEmployee, getMostProductiveEmployeeByDepartment
 }
