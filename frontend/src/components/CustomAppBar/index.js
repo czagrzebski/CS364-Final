@@ -32,7 +32,7 @@ export default function AppBarCustom({ pageTitle }) {
             {pageTitle}
           </Typography>
 
-          <Grid container alignItems="center" justifyContent="center" marginLeft="auto" minWidth="150px" maxWidth="200px">
+          <Grid container alignItems="center" justifyContent="flex-end" marginLeft="auto" maxWidth="200px">
             <IconButton
               aria-label="account"
               size="large"

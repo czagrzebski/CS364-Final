@@ -41,6 +41,7 @@ function LoginForm() {
         Sign in to Taskify
       </Typography>
       <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        {error ? <Alert severity="error">{error}</Alert> : null}
         <TextField
           error={error}
           margin="normal"
@@ -88,7 +89,6 @@ function LoginForm() {
         >
           Sign In
         </Button>
-        {error ? <Alert severity="error">{error}</Alert> : null}
       </Box>
     </Box>
     </Paper>

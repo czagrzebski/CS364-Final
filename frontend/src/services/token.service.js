@@ -7,7 +7,6 @@ class TokenService {
   };
   setUserToken = (token, fullName) => {
     var user = jwt(token);
-    console.log(user)
     useUserStore.setState({UserId: user.id, FullName: fullName, AccessToken: token})
   };
 

@@ -30,7 +30,6 @@ class AuthService {
 
   async logout() {
     tokenService.removeUserToken();
-    console.log("Logging out")
     api
       .post(AUTH_ENDPOINT + "logout", { withCredentials: true })
       .then((response) => {
