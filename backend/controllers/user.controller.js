@@ -138,7 +138,7 @@ async function deleteUser(req, res, next) {
             next(err);
         });
     
-    db.raw('DELETE FROM AssignedTo WHERE UserId = ?', [UserId])
+    db.raw('UPDATE AssignedTo SET UserId = NULL WHERE UserId = ?', [UserId])
         .then(() => {
             res.json("User deleted successfully");
         })
