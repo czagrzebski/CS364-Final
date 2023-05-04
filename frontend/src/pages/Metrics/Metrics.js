@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CustomAppBar from "../../components/CustomAppBar";
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import { MenuItem, FormControl, Select, InputLabel, Grid } from "@mui/material";
+import { MenuItem, FormControl, Select, InputLabel, Grid, Card, CardContent, Typography } from "@mui/material";
 import api from "../../services/api";
 
 export function Metrics() {

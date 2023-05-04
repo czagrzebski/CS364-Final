@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import LoginForm from '../../components/LoginForm';
 import { Grid } from '@mui/material';
-
 import Particles from "react-particles";
 import { loadFull } from "tsparticles";
 

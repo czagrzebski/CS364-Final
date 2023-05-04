@@ -79,6 +79,9 @@ web_modules/
 .env.production.local
 .env.local
 
+# do not include vscode settings
+.vscode/
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
