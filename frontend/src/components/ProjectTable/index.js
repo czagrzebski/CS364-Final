@@ -1,19 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import IconButton from "@mui/material/IconButton";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Toolbar, Typography, FormControl, Select, InputLabel, MenuItem, Menu } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CreateProjectDialog from "../CreateProjectDialog";
 import EditProjectDialog from "../EditProjectDialog";
-import { FormControl, Select, InputLabel, MenuItem } from "@mui/material";
-import { Toolbar, Typography } from "@mui/material";
 import FilterListIcon from '@mui/icons-material/FilterList';
-import Menu from "@mui/material/Menu";
 import api from "../../services/api";
 
 export default function ProjectTable({

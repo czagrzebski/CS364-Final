@@ -1,25 +1,12 @@
 import React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import IconButton from "@mui/material/IconButton";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Toolbar, Typography, Switch, FormControlLabel, FormGroup, MenuItem, Menu, Tooltip } from "@mui/material";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import FilterListIcon from '@mui/icons-material/FilterList';
 import EditTaskDialog from "../EditTaskDialog";
-import { Tooltip, Toolbar, Typography } from "@mui/material";
 import api from "../../services/api";
 import CreateTaskDialog from "../CreateTaskDialog";
-import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormGroup from "@mui/material/FormGroup";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import FilterListIcon from '@mui/icons-material/FilterList';
 
 export default function TaskTable({
   taskList,
@@ -57,6 +44,7 @@ export default function TaskTable({
     setSelectedTask(user);
     setIsEditDialogOpen(true);
   };
+
 
   const updateTask = (task) => {
     api.put('/task/update', {

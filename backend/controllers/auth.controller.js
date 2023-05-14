@@ -37,6 +37,7 @@ async function login(req, res) {
         if (err) {
           res.status(500).send("An unknown error has occurred");
         }
+        
         if (result) {
           const accessToken = generateAccessToken(user);
           const refreshToken = generateRefreshToken(user);
