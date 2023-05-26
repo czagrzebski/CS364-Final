@@ -6,6 +6,7 @@ import useUserStore from '../../utils/Stores';
 
 export function Tasks() {
   const UserId = useUserStore((state) => state.UserId)
+  const [loading, setLoading] = useState(true);
   const [taskList, setTaskList] = useState([]);
   const [hideCompleted, setHideCompleted] = useState(false);
   const [showAllTasks, setShowAllTasks] = useState(false);
@@ -19,6 +20,7 @@ export function Tasks() {
   }, [hideCompleted, showAllTasks]);
 
   const getAllTasks = () => {
+    setLoading(true);
     api.get('/task/all/', {
       params: {
         UserId: UserId,
@@ -29,12 +31,13 @@ export function Tasks() {
         setTaskList(response.data);
       }
     );
+    setLoading(false);
   };
 
   return (
     <div>
       <CustomAppBar pageTitle="Tasks" />
-      <TaskTable taskList={taskList} onUpdate={getAllTasks} hideCompleted={hideCompleted} setHideCompleted={setHideCompleted} showAllTasks={showAllTasks} setShowAllTasks={setShowAllTasks}/>
+      <TaskTable taskList={taskList} onUpdate={getAllTasks} hideCompleted={hideCompleted} setHideCompleted={setHideCompleted} showAllTasks={showAllTasks} setShowAllTasks={setShowAllTasks} loading={loading}/>
     </div>
   );
 }

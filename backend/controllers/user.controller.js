@@ -4,14 +4,22 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 async function getAllUsers(req, res, next) {
-    const allUsers = await db.raw('SELECT User.UserId, FirstName, LastName, Username, Role, Department.DeptName, Department.DeptId FROM User JOIN Department ON User.DeptId = Department.DeptId')
-        .catch((err) => {
-            err.status = 400;
-            err.message = "Failed to fetch users";
-            next(err);
-        });
+    const {search} = req.query;
 
-    res.json(allUsers);  
+    const query = db.select('User.UserId', 'User.FirstName', 'User.LastName', 'User.Username', 'User.Role', 'Department.DeptName', 'Department.DeptId').from('User').join('Department', 'User.DeptId', '=', 'Department.DeptId');
+
+    if (search) {
+        query.whereRaw(`LOWER(User.FirstName || " " || User.LastName) LIKE ?`, [`%${search.toLowerCase()}%`])
+    }
+
+    query.then((allUsers) => {
+        res.json(allUsers);
+    }).catch((err) => {
+        err.status = 400;
+        err.message = "Failed to get all users: " + err.message;
+        next(err);
+    });
+  
 }
 
 async function getUserById(req, res, next) {

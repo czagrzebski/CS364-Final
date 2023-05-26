@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Toolbar, Typography, Switch, FormControlLabel, FormGroup, MenuItem, Menu, Tooltip } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Toolbar, Typography, Switch, FormControlLabel, FormGroup, MenuItem, Menu, Tooltip, TablePagination, CircularProgress } from "@mui/material";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -14,11 +14,14 @@ export default function TaskTable({
   hideCompleted,
   setHideCompleted,
   showAllTasks,
-  setShowAllTasks
+  setShowAllTasks,
+  loading
 }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
   const [selectedTask, setSelectedTask] = React.useState({});
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   const formatDate = (dateString) => {
     const options = {
@@ -45,7 +48,6 @@ export default function TaskTable({
     setIsEditDialogOpen(true);
   };
 
-
   const updateTask = (task) => {
     api.put('/task/update', {
       TaskId: task.TaskId,
@@ -61,105 +63,139 @@ export default function TaskTable({
     });
   };
 
-  return (
-    <div>
-      <EnhancedTaskToolBar isChecked={hideCompleted} setIsChecked={setHideCompleted} showAllTasks={showAllTasks} setShowAllTasks={setShowAllTasks} />
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox">
-                <IconButton onClick={() => setIsCreateDialogOpen(true)}>
-                  <AddCircleIcon />
-                </IconButton>
-              </TableCell>
-              <TableCell>Task</TableCell>
-              <TableCell align="right">Project</TableCell>
-              <TableCell align="right">Assignee</TableCell>
-              <TableCell align="right">Date Assigned</TableCell>
-              <TableCell align="right">Due Date</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {taskList.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} align="center">
-                  No tasks found
-                </TableCell>
-              </TableRow>
-            )}
-            {taskList.map((task) => (
-              (hideCompleted && task.TaskCompleted) ? null : (
-                <TableRow
-                key={task.TaskId}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                onClick={(event) => onEditTask(event, task)}
-                hover
-              >
-                <TableCell padding="checkbox">
-                  <IconButton
-                    aria-label="delete"
-                    onClick={(event) => onTaskChecked(event, task)}
-                  >
-                    {task.TaskCompleted ? (
-                      <TaskAltIcon />
-                    ) : (
-                      <RadioButtonUncheckedIcon />
-                    )}
-                  </IconButton>
-                </TableCell>
-                <Tooltip
-                  title={task.TaskDescription}
-                  placement="bottom-start"
-                  arrow
-                >
-                  <TableCell component="th" scope="row">
-                    {task.TaskTitle}
-                  </TableCell>
-                </Tooltip>
-                <TableCell align="right">{task.ProjectTitle}</TableCell>
-                <TableCell 
-                  align="right"   
-                  sx={{
-                    color:
-                      task.UserId ? "white" : "red",
-                  }}>
-                  {task.UserId ? task.FirstName + " " + task.LastName : "Unassigned"}
-                </TableCell>
-                <TableCell align="right">{task.DateAssigned}</TableCell>
-                <TableCell
-                  align="right"
-                  sx={{
-                    color:
-                      new Date() > new Date(task.TaskDueDate) ? "red" : "white",
-                  }}
-                >
-                  {formatDate(task.TaskDueDate)}
-                </TableCell>
-              </TableRow>
-            )
-              
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      {isEditDialogOpen ? (
-        <EditTaskDialog
-          isDialogOpen={isEditDialogOpen}
-          setIsDialogOpen={setIsEditDialogOpen}
-          onUpdate={onUpdate}
-          task={selectedTask}
-        />
-      ) : null}
-      {isCreateDialogOpen ? (
-        <CreateTaskDialog
-          isDialogOpen={isCreateDialogOpen}
-          setIsDialogOpen={setIsCreateDialogOpen}
-          onUpdate={onUpdate}
-        />
-      ) : null}
-    </div>
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const visibleRows = React.useMemo(
+    () =>
+      taskList.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage,
+      ),
+    [page, rowsPerPage, taskList],
   );
+
+  return (
+    loading ? (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </div>
+    ) : (
+      <div>
+        <EnhancedTaskToolBar isChecked={hideCompleted} setIsChecked={setHideCompleted} showAllTasks={showAllTasks} setShowAllTasks={setShowAllTasks} />
+        <Paper sx={{ width: '100%', mb: 2 }}>
+          <TableContainer>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell padding="checkbox">
+                    <IconButton onClick={() => setIsCreateDialogOpen(true)}>
+                      <AddCircleIcon />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell>Task</TableCell>
+                  <TableCell align="right">Project</TableCell>
+                  <TableCell align="right">Assignee</TableCell>
+                  <TableCell align="right">Date Assigned</TableCell>
+                  <TableCell align="right">Due Date</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {visibleRows.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} align="center">
+                      No tasks found
+                    </TableCell>
+                  </TableRow>
+                )}
+                {visibleRows.map((task) => (
+                  (hideCompleted && task.TaskCompleted) ? null : (
+                    <TableRow
+                      key={task.TaskId}
+                      onClick={(event) => onEditTask(event, task)}
+                      hover
+                    >
+                      <TableCell padding="checkbox">
+                        <IconButton
+                          aria-label="delete"
+                          onClick={(event) => onTaskChecked(event, task)}
+                        >
+                          {task.TaskCompleted ? (
+                            <TaskAltIcon />
+                          ) : (
+                            <RadioButtonUncheckedIcon />
+                          )}
+                        </IconButton>
+                      </TableCell>
+                      <Tooltip
+                        title={task.TaskDescription}
+                        placement="bottom-start"
+                        arrow
+                      >
+                        <TableCell component="th" scope="row">
+                          {task.TaskTitle}
+                        </TableCell>
+                      </Tooltip>
+                      <TableCell align="right">{task.ProjectTitle}</TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{
+                          color:
+                            task.UserId ? "white" : "red",
+                        }}>
+                        {task.UserId ? task.FirstName + " " + task.LastName : "Unassigned"}
+                      </TableCell>
+                      <TableCell align="right">{task.DateAssigned}</TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{
+                          color:
+                            new Date() > new Date(task.TaskDueDate) ? "red" : "white",
+                        }}
+                      >
+                        {formatDate(task.TaskDueDate)}
+                      </TableCell>
+                    </TableRow>
+                  )
+
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={taskList.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
+        {isEditDialogOpen ? (
+          <EditTaskDialog
+            isDialogOpen={isEditDialogOpen}
+            setIsDialogOpen={setIsEditDialogOpen}
+            onUpdate={onUpdate}
+            task={selectedTask}
+          />
+        ) : null}
+        {isCreateDialogOpen ? (
+          <CreateTaskDialog
+            isDialogOpen={isCreateDialogOpen}
+            setIsDialogOpen={setIsCreateDialogOpen}
+            onUpdate={onUpdate}
+          />
+        ) : null}
+      </div>
+    )
+  )
 }
 
 function EnhancedTaskToolBar({ isChecked, setIsChecked, showAllTasks, setShowAllTasks }) {

@@ -24,8 +24,6 @@ const getAllProjects = async (req, res, next) => {
 }
     }
 
-  
-
 const createProject = async (req, res, next) => {
     const { ProjectTitle, DeptId } = req.body;
 

@@ -49,6 +49,3 @@ app.use(function (err, req, res, next) {
 app.listen(port, () => {
     console.log(`Taskify backend server listening on port ${port}`);
 })
-
-
-
